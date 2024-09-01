@@ -35,20 +35,20 @@ grant all privileges on all tables in schema cron to postgres;
 --                                                            --
 ----------------------------------------------------------------
 
-delete from storage.objects where bucket_id = 'YOUR_BUCKET_ID';
-delete from storage.buckets where id = 'YOUR_BUCKET_ID';
+delete from storage.objects where bucket_id = 'bucket';
+delete from storage.buckets where id = 'bucket';
 
 drop policy if exists "Public access for all users" on storage.objects;
 drop policy if exists "User can upload in their own folders" on storage.objects;
 drop policy if exists "User can update their own objects" on storage.objects;
 drop policy if exists "User can delete their own objects" on storage.objects;
 
-insert into storage.buckets (id, name, public) values ('YOUR_BUCKET_ID', 'YOUR_BUCKET_ID', true);
+insert into storage.buckets (id, name, public) values ('bucket', 'bucket', true);
 
 create policy "Public access for all users" on storage.objects
-  for select to authenticated, anon using (bucket_id = 'YOUR_BUCKET_ID');
+  for select to authenticated, anon using (bucket_id = 'bucket');
 create policy "User can upload in their own folders" on storage.objects
-  for insert to authenticated with check (bucket_id = 'YOUR_BUCKET_ID' and (storage.foldername(name))[1] = (select auth.uid()::text));
+  for insert to authenticated with check (bucket_id = 'bucket' and (storage.foldername(name))[1] = (select auth.uid()::text));
 create policy "User can update their own objects" on storage.objects
   for update to authenticated using (owner_id = (select auth.uid()::text));
 create policy "User can delete their own objects" on storage.objects
@@ -1391,10 +1391,10 @@ $$ language plpgsql;
 --                                                            --
 ----------------------------------------------------------------
 
--- select create_new_user('username@example.com', '123456789');
--- select delete_user('username@example.com');
+-- select create_new_user('thevynn.studio@gmail.com', '123456789');
+-- select delete_user('thevynn.studio@gmail.com');
 
 select assign_user_data();
 
-select set_user_role('superadmin', null, 'username@example.com');
-select set_user_plan('premium', null, 'username@example.com');
+select set_user_role('superadmin', null, 'thevynn.studio@gmail.com');
+select set_user_plan('premium', null, 'thevynn.studio@gmail.com');

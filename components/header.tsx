@@ -3,6 +3,8 @@
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
 
 import { LucideIcon } from '@/lib/lucide-icon'
 import { Button } from '@/components/ui/button'
@@ -15,12 +17,13 @@ import {
 } from '@/components/ui/sheet'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 
-import { SiteBrand } from '@/components/site-brand'
 import { Navigation } from '@/components/navigation'
 import { MobileNavigation } from '@/components/mobile-navigation'
 import { AccountMenu } from '@/components/account-menu'
 import { SearchForm } from '@/components/search-form'
 import { SearchFormDialog } from '@/components/search-form-dialog'
+
+import LogoFull from '@/public/assets/logos/logo-full.svg'
 
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/hooks/use-auth'
@@ -65,7 +68,14 @@ const Header = ({ className, ...props }: HeaderProps) => {
               <span className="sr-only">Toggle navigation menu</span>
             </Button>
           </SheetTrigger>
-          <SiteBrand className="mr-6 hidden md:flex" />
+          <Link href="/">
+            <Image
+              src={LogoFull}
+              alt="OpenTypo"
+              height={20}
+              className="mr-6 hidden md:flex"
+            />
+          </Link>
           <Navigation />
           <div className="ml-auto flex gap-2">
             {pathname !== '/' ? (

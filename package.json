@@ -1,6 +1,6 @@
 {
-  "name": "nextjs-supabase-dashboard",
-  "description": "This is a dashboard starter template for the NextJS 14 app router using supabase based on shadcn-ui.",
+  "name": "opentypo",
+  "description": "This is a v1 of the OpenTypo™ Web App.",
   "version": "0.1.0",
   "private": true,
   "scripts": {

@@ -8,10 +8,9 @@ export interface SiteConfig {
 }
 
 export const siteConfig: SiteConfig = {
-  name: 'NextJS supabase dashboard',
-  title: 'NextJS supabase dashboard',
-  description:
-    'This is a dashboard starter template for the NextJS 14 app router using supabase based on shadcn-ui.',
+  name: 'OpenTypo™',
+  title: 'OpenTypo™: Free, but Better.',
+  description: 'Free, But Better Quality Fonts for Commercial Uses.',
   symbol: 'Activity', // LucideIcon
 }
 

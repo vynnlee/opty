@@ -5,7 +5,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 import LogoSymbol from '@/public/assets/logos/logo-symbol.svg'
+import LogoDexSymbol from '@/public/assets/logos/logo-dex-symbol.svg'
 
+import { LucideIcon } from '@/lib/lucide-icon'
 import { cn } from '@/lib/utils'
 import {
   NavigationMenu,
@@ -17,16 +19,29 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
 
-const about: { title: string; href: string; description: string }[] = [
+const docs: {
+  title: string
+  href: string
+  description: string
+  icon: string
+}[] = [
   {
-    title: 'OpenTypo™',
-    href: '/about/opentypo',
-    description: '유료보다 예쁜 무료 폰트를 큐레이팅 해드립니다.',
+    title: '글꼴에 대하여',
+    href: '/docs/typography',
+    description: '글꼴에 대한 탐구 일지',
+    icon: 'Type',
   },
   {
-    title: 'Design eXperience™ Team',
-    href: '/about/dexer',
-    description: '디자이너를 위한, 디자이너에 의한 프로덕트를 짓습니다.',
+    title: '웹 폰트에 대하여',
+    href: '/docs/webfont',
+    description: '웹 환경에서의 글꼴에 대하여',
+    icon: 'FolderCode',
+  },
+  {
+    title: '공지사항',
+    href: '/docs/notice',
+    description: '',
+    icon: 'Flag',
   },
 ]
 
@@ -35,21 +50,29 @@ export function Navigation() {
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
+          <Link href="/fonts" legacyBehavior passHref>
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+              글꼴 둘러보기
+            </NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
           <NavigationMenuTrigger>소개</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid gap-3 p-6 md:w-[500px] lg:w-[600px] lg:grid-cols-[1fr_2fr]">
               <li className="row-span-3">
                 <NavigationMenuLink asChild>
                   <a
-                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-neutral-100 to-neutral-50 p-6 no-underline outline-none focus:shadow-md"
                     href="/about/opentypo"
                   >
                     <Image
                       src={LogoSymbol}
                       alt="OpenTypo"
                       height={24}
+                      priority={true}
                     />
-                    <div className="mb-2 mt-2 text-lg font-medium">
+                    <div className="mb-2 mt-2 text-lg font-bold">
                       OpenTypo™
                     </div>
                     <p className="text-sm leading-tight text-muted-foreground">
@@ -61,10 +84,16 @@ export function Navigation() {
               <li className="row-span-3">
                 <NavigationMenuLink asChild>
                   <a
-                    className="flex h-full w-full select-none flex-col justify-end rounded-md border border-neutral-200 p-6 no-underline focus:shadow-md"
+                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-neutral-100 to-neutral-50 p-6 no-underline focus:shadow-md"
                     href="/about/dexer"
                   >
-                    <div className="mb-2 mt-4 text-lg font-medium">
+                    <Image
+                      src={LogoDexSymbol}
+                      alt="Design eXperience"
+                      height={20}
+                      priority={true}
+                    />
+                    <div className="mb-2 mt-2 text-lg font-bold">
                       Design eXperience™ Team
                     </div>
                     <p className="text-sm leading-tight text-muted-foreground">
@@ -77,25 +106,33 @@ export function Navigation() {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>소개</NavigationMenuTrigger>
+          <NavigationMenuTrigger>알려드림</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {about.map((about) => (
+              {docs.map((docs) => (
                 <ListItem
-                  key={about.title}
-                  title={about.title}
-                  href={about.href}
+                  key={docs.title}
+                  title={docs.title}
+                  href={docs.href}
+                  icon={docs.icon}
                 >
-                  {about.description}
+                  {docs.description}
                 </ListItem>
               ))}
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="/docs" legacyBehavior passHref>
+          <Link href="/fonts" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Documentation
+              글꼴 쓰임
+            </NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Link href="/fonts" legacyBehavior passHref>
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+              자주 묻는 질문
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
@@ -107,22 +144,30 @@ export function Navigation() {
 const ListItem = React.forwardRef<
   React.ElementRef<'a'>,
   React.ComponentPropsWithoutRef<'a'>
->(({ className, title, children, ...props }, ref) => {
+>(({ className, title, children, icon, ...props }, ref) => {
   return (
     <li>
-      <NavigationMenuLink asChild>
+      <NavigationMenuLink className="flex flex-row gap-2" asChild>
         <a
           ref={ref}
           className={cn(
-            'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
+            'block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
             className
           )}
           {...props}
         >
-          <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
+          <div className="flex h-9 w-9 items-center justify-center rounded-sm border border-neutral-200">
+            <LucideIcon
+              name={icon}
+              className="size-5 min-w-5 text-neutral-800"
+            />
+          </div>
+          <div className="flex flex-col justify-center gap-1">
+            <div className="text-sm font-medium leading-none">{title}</div>
+            <p className="line-clamp-2 text-sm leading-none text-muted-foreground">
+              {children}
+            </p>
+          </div>
         </a>
       </NavigationMenuLink>
     </li>

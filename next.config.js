@@ -5,9 +5,6 @@ const withPWA = require('next-pwa')({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    turboMode: true, // Turbopack 활성화
-  },
   reactStrictMode: process.env.NODE_ENV === 'production',
   swcMinify: true,
   eslint: {

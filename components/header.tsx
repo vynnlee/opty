@@ -25,7 +25,6 @@ import { SearchFormDialog } from '@/components/search-form-dialog'
 
 import LogoFull from '@/public/assets/logos/logo-full.svg'
 
-import { cn } from '@/lib/utils'
 import { useAuth } from '@/hooks/use-auth'
 
 interface HeaderProps extends React.HTMLAttributes<HTMLElement> {}
@@ -47,13 +46,7 @@ const Header = ({ className, ...props }: HeaderProps) => {
         <MobileNavigation />
       </SheetContent>
       <header
-        className={
-          (cn(
-            'flex w-full flex-col border-0 border-b border-solid border-input'
-            // 'sticky left-0 top-0 z-10'
-          ),
-          className)
-        }
+        className="sticky left-0 top-0 z-10 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60"
         {...props}
       >
         <div className="container flex h-[60px] items-center">
@@ -113,19 +106,19 @@ const SignedOutNav = () => {
   return (
     <>
       <Button
-        variant="outline"
-        className="w-10 sm:w-auto"
+        variant="ghost"
+        className="w-10 rounded-full gap-1 sm:w-auto"
         onClick={() => router.push('/auth/signin')}
       >
-        <LucideIcon name="LogIn" className="size-5 min-w-5 sm:hidden" />
+        <LucideIcon name="LogIn" className="size-4 min-w-4" />
         <span className="hidden sm:inline">{t('signin')}</span>
       </Button>
       <Button
-        className="w-10 sm:w-auto"
+        className="w-10 rounded-full gap-1 sm:w-auto"
         onClick={() => router.push('/auth/signup')}
       >
-        <LucideIcon name="UserPlus" className="size-5 min-w-5 sm:hidden" />
-        <span className="hidden sm:inline">{t('signup')}</span>
+        <LucideIcon name="UserPlus" className="size-4 min-w-4 sm:hidden" />
+        <span className="hidden sm:inline">{t('sign_up')}</span>
       </Button>
     </>
   )

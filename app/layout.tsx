@@ -14,7 +14,17 @@ import { cn } from '@/lib/utils'
 import { siteConfig } from '@/config/site'
 import { defaultLng } from '@/i18next.config'
 
+import { Instrument_Serif } from 'next/font/google'
+import { GeistSans } from 'geist/font/sans'
+import { GeistMono } from 'geist/font/mono'
 import './globals.css'
+
+const instrumentSerif = Instrument_Serif({
+  weight: '400',
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  variable: '--font-instrument',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL!),
@@ -50,7 +60,14 @@ export default function RootLayout({
 
   return (
     <html lang={language} suppressHydrationWarning>
-      <body className={cn('font-sans antialiased')}>
+      <body
+        className={cn(
+          'font-sans antialiased',
+          instrumentSerif.variable,
+          GeistSans.variable,
+          GeistMono.variable
+        )}
+      >
         <AppProvider>
           <I18nProvider value={{ language }}>
             <ThemeProvider value={{ theme }}>

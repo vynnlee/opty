@@ -20,6 +20,7 @@ const tailwindConfig = {
     },
     extend: {
       colors: {
+        brandPrimary: '#FF3002',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -76,6 +77,9 @@ const tailwindConfig = {
       fontFamily: {
         sans: ['Noto Sans KR', 'sans-serif'],
         serif: ['Noto Serif KR', 'serif'],
+        instrument: ['var(--font-instrument)'],
+        geistSans: ['var(--font-geist-sans)', 'sans-serif'],
+        geistMono: ['var(--font-geist-mono)', 'monospace'],
       },
     },
   },

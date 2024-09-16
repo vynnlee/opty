@@ -19,6 +19,8 @@ import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 
+import { Header } from '@/components/header'
+
 const instrumentSerif = Instrument_Serif({
   weight: '400',
   subsets: ['latin'],
@@ -71,7 +73,10 @@ export default function RootLayout({
         <AppProvider>
           <I18nProvider value={{ language }}>
             <ThemeProvider value={{ theme }}>
-              <div id="__next">{children}</div>
+              <div id="__next">
+                <Header />
+                {children}
+              </div>
               <Toaster richColors closeButton />
               <TailwindIndicator />
               {process.env.NODE_ENV === 'production' ? <Analytics /> : null}

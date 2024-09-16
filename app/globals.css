@@ -61,3 +61,61 @@
   }
 }
 
+/* 홀로그램 스타일 */
+.holographic {
+  --stripes: repeating-linear-gradient(
+    315deg,
+    #000 6.66%,
+    #fff 13.33%,
+    #000 20%
+  );
+  --rainbow: repeating-linear-gradient(
+    115deg,
+    #f87171,
+    #fef08a,
+    #86efac,
+    #5eead4,
+    #60a5fa,
+    #e879f9,
+    #fb7185
+  );
+  background-image: var(--stripes), var(--rainbow);
+  background-blend-mode: screen;
+  background-size: 600%, 150%;
+  background-position:
+    calc(40% + var(--mx) * 20%) 50%,
+    calc(45% + var(--my) * 10%) 50%;
+  filter: saturate(150%);
+  mix-blend-mode: exclusion;
+}
+
+.holographic::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--stripes), var(--rainbow);
+  background-blend-mode: screen;
+  background-size: 250%, 200%;
+  background-position:
+    calc(60% - var(--mx) * 20%) 50%,
+    calc(55% - var(--my) * 10%) 50%;
+  mix-blend-mode: difference;
+}
+
+.glare {
+  background-image: radial-gradient(
+    circle at calc(50% + var(--mx) * 50%) calc(50% + var(--my) * 50%),
+    rgba(255, 255, 255, 0.04),
+    transparent
+  );
+}
+
+/* Custom scrollbar hide */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

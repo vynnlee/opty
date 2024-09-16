@@ -1,0 +1,58 @@
+/* ChatBubble.module.css */
+
+/* 말풍선 공통 스타일 */
+.bubble {
+  position: relative;
+  padding: 10px 20px;
+  border-radius: 25px;
+  max-width: 255px;
+  word-wrap: break-word;
+}
+
+/* 타임스탬프 스타일 */
+.timestamp {
+  display: block;
+  font-size: 0.75rem; /* 작은 글씨 */
+  text-align: right; /* 오른쪽 정렬 */
+}
+
+/* 말꼬리 스타일 */
+.sent::before,
+.sent::after,
+.receive::before,
+.receive::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  height: 25px;
+}
+
+/* 보낸 메시지 말꼬리 */
+.sent::before {
+  right: -7px;
+  width: 20px;
+  background-color: inherit; /* 말풍선의 색상에 따라 동적으로 변경 */
+  border-bottom-left-radius: 16px 14px;
+}
+
+.sent::after {
+  right: -26px;
+  width: 26px;
+  background-color: white; /* 페이지 배경색 */
+  border-bottom-left-radius: 10px;
+}
+
+/* 받은 메시지 말꼬리 */
+.receive::before {
+  left: -7px;
+  width: 20px;
+  background-color: inherit; /* 말풍선의 색상에 따라 동적으로 변경 */
+  border-bottom-right-radius: 16px 14px;
+}
+
+.receive::after {
+  left: -26px;
+  width: 26px;
+  background-color: white; /* 페이지 배경색 */
+  border-bottom-right-radius: 10px;
+}

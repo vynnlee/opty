@@ -7,7 +7,7 @@ import { LucideIcon } from '@/lib/lucide-icon'
 import Slider from '@/components/ui-custom/slider'
 
 export default function FontSizeSlider() {
-  const [sliderValue, setSliderValue] = useState(50)
+  const [sliderValue, setSliderValue] = useState(28)
 
   return (
     <div className="mx-auto w-full max-w-md">

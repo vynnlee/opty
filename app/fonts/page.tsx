@@ -13,20 +13,18 @@ import LangSelect from '@/components/fonts/LangSelect'
 import CategorySelect from '@/components/fonts/CategorySelect'
 import FontSizeSlider from '@/components/fonts/FontSizeSlider'
 import RegisterAdvCard from '@/components/cta/RegisterAdvCard'
+import FontPreviewCard from '@/components/fonts/FontPreviewCard'
 
 export default function Fonts() {
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <div className="grid w-full grid-cols-[240px_1fr] overflow-hidden">
+      <div className="grid w-full grid-cols-[280px_1fr] overflow-hidden">
         <section id="sidebar" className="relative flex flex-col border-r">
-          <div className="fixed grid h-full w-[240px] grid-rows-[1fr_200px] overflow-hidden">
-            <div className="flex flex-col gap-6 px-4">
-              <Image
-                src={LogoFull}
-                alt="OpenTypo"
-                height={20}
-                className="mt-5"
-              />
+          <div className="fixed grid h-full w-[280px] grid-rows-[1fr_0.65fr] overflow-hidden">
+            <div
+              id="filter-section"
+              className="scrollbar-hide flex flex-col gap-6 overflow-y-auto px-4 pt-4"
+            >
               <div id="preview-text" className="flex flex-col gap-2">
                 <Label
                   htmlFor="preview-text"
@@ -80,13 +78,19 @@ export default function Fonts() {
                 <CategorySelect />
               </div>
             </div>
-            <div className="overflow-hidden p-3">
+            <div id="footer-section" className="overflow-hidden p-3">
               <RegisterAdvCard />
+              <footer className="mb-2 mt-4">
+                <p className="text-xs text-neutral-400">
+                  © 2024 <span className="font-bold">OpenTypo</span>. All
+                  rights reserved.
+                </p>
+              </footer>
             </div>
           </div>
         </section>
-        <section id="explore" className="flex h-[3000px] flex-col px-4">
-          Contents
+        <section id="explore" className="flex h-[3000px] flex-col px-4 pt-4">
+          <FontPreviewCard />
         </section>
       </div>
     </div>

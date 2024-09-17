@@ -51,11 +51,7 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children?: React.ReactNode
-}>) {
+export default function RootLayout({ children }) {
   const cookieStore = cookies()
   const language = cookieStore.get('app:language')?.value || defaultLng
   const theme = cookieStore.get('app:theme')?.value || 'system'
@@ -65,6 +61,7 @@ export default function RootLayout({
       <body
         className={cn(
           'font-sans antialiased',
+          'flex min-h-screen flex-col',
           instrumentSerif.variable,
           GeistSans.variable,
           GeistMono.variable
@@ -73,9 +70,9 @@ export default function RootLayout({
         <AppProvider>
           <I18nProvider value={{ language }}>
             <ThemeProvider value={{ theme }}>
-              <div id="__next">
-                <Header />
-                {children}
+              <div id="__next" className="flex flex-grow flex-col">
+                {/* <Header /> */}
+                <main className="flex-grow">{children}</main>
               </div>
               <Toaster richColors closeButton />
               <TailwindIndicator />

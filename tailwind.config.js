@@ -85,6 +85,7 @@ const tailwindConfig = {
   },
   plugins: [
     require('tailwindcss-animate'),
+    require('tailwind-scrollbar-hide'),
     plugin(function ({ addUtilities }) {
       const newUtilities = {
         '.text-2xs': { fontSize: '10px', lineHeight: 1 },

@@ -2,7 +2,9 @@
 
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
+import { LucideIcon } from '@/lib/lucide-icon'
 import { CloudDownload } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import {
   Tooltip,
@@ -70,9 +72,9 @@ export default function FontPreviewCard({
 
   return (
     <Card className="w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 shadow-none">
-      <CardHeader>
+      <CardHeader className="px-6 py-4">
         <div className="flex w-full flex-row justify-between">
-          <p className="text-base font-semibold text-neutral-500">{name}</p>
+          <p className="text-base font-medium text-neutral-500">{name}</p>
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-y-3">
@@ -90,32 +92,53 @@ export default function FontPreviewCard({
           Designed by {renderAuthors()}
         </p>
       </CardContent>
-      <CardFooter className="flex flex-col justify-between gap-4 bg-white py-3 md:flex-row">
-        <div className="flex w-full flex-row gap-3">
+      <CardFooter className="flex flex-col justify-between gap-4 bg-white py-3 pr-3 md:flex-row">
+        <div className="flex-0 flex flex-row gap-3">
           <div className="flex-none text-sm font-medium text-neutral-500">
             코멘터리
           </div>
-          <div className="font-regular text-sm">{comment}</div>
+          <div className="font-regular w-full text-sm">{comment}</div>
         </div>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href={downloadUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Download font ${name}`}
-                className="flex w-full flex-none items-center justify-center rounded-full border py-3 pl-4 pr-8 font-semibold text-neutral-800 hover:bg-gray-50 md:w-fit md:py-2 md:pl-3 md:pr-4"
-              >
-                <CloudDownload className="mr-2 h-4 w-4 text-brandPrimary" />
-                <p className="text-md md:text-sm">다운로드</p>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>원작자의 다운로드 페이지로 이동합니다.</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div className="flex flex-row gap-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={downloadUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Download font ${name}`}
+                  className="flex w-full flex-none items-center justify-center rounded-full border py-3 pl-4 pr-8 font-medium text-neutral-800 hover:bg-gray-50 md:w-fit md:py-2 md:pl-3 md:pr-4"
+                >
+                  <LucideIcon
+                    name="CloudDownload"
+                    className="mr-2 size-4 text-brandPrimary"
+                  />
+                  <p className="text-md md:text-sm">다운로드</p>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>원작자의 다운로드 페이지로 이동합니다.</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="secondary"
+                  className="h-[38px] rounded-full bg-neutral-50"
+                >
+                  <LucideIcon
+                    name="Bookmark"
+                    className="size-4 text-neutral-900"
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>북마크에 저장</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </CardFooter>
     </Card>
   )

@@ -9,7 +9,7 @@ import { Footer } from '@/components/footer'
 export default function RootPage() {
   return (
     <div>
-      {/* <Header /> */}
+      <Header />
       <main className="flex min-h-[80vh] flex-col pb-20 sm:pb-40">
         <Hero />
         <div className="container mt-8">

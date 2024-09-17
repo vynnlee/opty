@@ -20,7 +20,7 @@ export default function FontSizeSlider() {
       </div>
       <Slider
         value={sliderValue}
-        min={0}
+        min={8}
         max={72}
         step={4}
         onValueChange={setSliderValue}

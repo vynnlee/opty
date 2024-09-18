@@ -80,10 +80,10 @@ export default function FontPreviewCard({
       <CardContent className="flex flex-col gap-y-3">
         <input
           type="text"
-          className="w-full border-none bg-transparent text-6xl outline-none"
+          className="w-full border-none bg-transparent text-6xl text-neutral-900 outline-none"
           style={{
             fontFamily: fontLoaded ? name : 'inherit',
-            opacity: fontLoaded ? 1 : 0.5,
+            opacity: fontLoaded ? 0.5 : 1,
           }}
           value={editableName}
           onChange={(e) => setEditableName(e.target.value)}

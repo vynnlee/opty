@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -26,22 +26,35 @@ import {
   DrawerCheckboxItem,
 } from '@/components/ui/drawer'
 
-// 커스텀 훅: 선택된 항목 상태를 관리
-function useMultiSelect(initialSelected: string[]) {
+// Custom hook: Manage selected items state
+function useMultiSelect(
+  initialSelected: string[],
+  onChange: (selected: string[]) => void
+) {
   const [selected, setSelected] = useState<string[]>(initialSelected)
 
-  const toggleItem = (id: string, checked: boolean) => {
-    setSelected((prev) =>
-      checked ? [...prev, id] : prev.filter((item) => item !== id)
-    )
-  }
+  const toggleItem = useCallback(
+    (id: string, checked: boolean) => {
+      setSelected((prev) => {
+        const newSelected = checked
+          ? [...prev, id]
+          : prev.filter((item) => item !== id)
+        onChange(newSelected)
+        return newSelected
+      })
+    },
+    [onChange]
+  )
 
-  const reset = () => setSelected([])
+  const reset = useCallback(() => {
+    setSelected([])
+    onChange([])
+  }, [onChange])
 
   return { selected, toggleItem, reset }
 }
 
-// 선택된 아이템 텍스트 표시 유틸리티 함수
+// Utility function to display selected items text
 function getSelectedItemsText(
   selectedItems: string[],
   options: { id: string; label: string }[],
@@ -61,7 +74,7 @@ interface MultiSelectProps {
   selectedOptions: string[]
   onChange: (selected: string[]) => void
   placeholder?: string
-  className?: string // 추가된 부분
+  className?: string
 }
 
 export default function MultiSelect({
@@ -69,42 +82,49 @@ export default function MultiSelect({
   selectedOptions,
   onChange,
   placeholder = 'Select...',
-  className, // 추가된 부분
+  className,
 }: MultiSelectProps) {
-  const { selected, toggleItem, reset } = useMultiSelect(selectedOptions)
+  const { selected, toggleItem, reset } = useMultiSelect(
+    selectedOptions,
+    onChange
+  )
   const isMobile = useMediaQuery('(max-width: 768px)')
 
   useEffect(() => {
-    onChange(selected)
-  }, [selected, onChange])
+    if (JSON.stringify(selectedOptions) !== JSON.stringify(selected)) {
+      onChange(selected)
+    }
+  }, [selected, selectedOptions, onChange])
 
   const selectedItemsText = getSelectedItemsText(selected, options, placeholder)
 
-  // 옵션 렌더링 함수
-  const renderOptions = () => (
-    <div className="max-h-60 overflow-y-auto">
-      {options.map((option) => (
-        <React.Fragment key={option.id}>
-          {isMobile ? (
-            <DrawerCheckboxItem
-              checked={selected.includes(option.id)}
-              onCheckedChange={(checked) => toggleItem(option.id, checked)}
-              className="py-4"
-            >
-              {option.label}
-            </DrawerCheckboxItem>
-          ) : (
-            <DropdownMenuCheckboxItem
-              checked={selected.includes(option.id)}
-              keepOpenOnSelect={true} // 드롭다운이 꺼지지 않도록 설정
-              onCheckedChange={(checked) => toggleItem(option.id, checked)}
-            >
-              {option.label}
-            </DropdownMenuCheckboxItem>
-          )}
-        </React.Fragment>
-      ))}
-    </div>
+  // Options rendering function
+  const renderOptions = useCallback(
+    () => (
+      <div className="max-h-60 overflow-y-auto">
+        {options.map((option) => (
+          <React.Fragment key={option.id}>
+            {isMobile ? (
+              <DrawerCheckboxItem
+                checked={selected.includes(option.id)}
+                onCheckedChange={(checked) => toggleItem(option.id, checked)}
+                className="py-4"
+              >
+                {option.label}
+              </DrawerCheckboxItem>
+            ) : (
+              <DropdownMenuCheckboxItem
+                checked={selected.includes(option.id)}
+                onCheckedChange={(checked) => toggleItem(option.id, checked)}
+              >
+                {option.label}
+              </DropdownMenuCheckboxItem>
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+    ),
+    [isMobile, options, selected, toggleItem]
   )
 
   return isMobile ? (
@@ -160,7 +180,7 @@ export default function MultiSelect({
         <DropdownMenuSeparator />
         {renderOptions()}
         <DropdownMenuSeparator />
-        <DropdownMenuItem keepOpenOnSelect={true}>
+        <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
           <Button
             onClick={reset}
             variant="secondary"

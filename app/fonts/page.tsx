@@ -2,9 +2,10 @@
 
 'use client'
 
-import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import supabase from '@/lib/supabaseClient'
+
 import { LucideIcon } from '@/lib/lucide-icon'
-import LogoFull from '@/public/assets/logos/logo-full.svg'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
@@ -18,6 +19,29 @@ import { FontSearchForm } from '@/components/fonts/FontSearchForm'
 import { Header } from '@/components/header'
 
 export default function Fonts() {
+  const [fonts, setFonts] = useState([])
+
+  useEffect(() => {
+    const fetchFonts = async () => {
+      const { data, error } = await supabase.from('fonts').select(`
+          id,
+          name,
+          commentary,
+          storage_url,
+          authors:font_authors(author_id (name, link)),
+          styles:font_styles(style_id (style))
+        `)
+
+      if (error) {
+        console.error('Error fetching fonts:', error)
+      } else {
+        setFonts(data)
+      }
+    }
+
+    fetchFonts()
+  }, [])
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -110,10 +134,16 @@ export default function Fonts() {
           id="explore"
           className="flex flex-col gap-4 overflow-y-auto bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] px-4 pt-4 scrollbar-hide [background-size:16px_16px]"
         >
-          <FontPreviewCard />
-          <FontPreviewCard />
-          <FontPreviewCard />
-          <FontPreviewCard />
+          {fonts.map((font) => (
+            <FontPreviewCard
+              key={font.id}
+              name={font.name}
+              authors={font.authors.map((author) => author.author_id)}
+              fontUrl={font.storage_url}
+              comment={font.commentary}
+              downloadUrl={font.storage_url}
+            />
+          ))}
         </section>
         {/* AI Search Section */}
         <section id="ai-search" className="flex flex-col border-l">

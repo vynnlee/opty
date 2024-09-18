@@ -165,6 +165,10 @@ export default function ManageFontsPage() {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [selectedStyles, setSelectedStyles] = useState<string[]>([])
   const [analyzedFile, setAnalyzedFile] = useState<AnalyzedFile | null>(null)
+  const [additionalMetadata, setAdditionalMetadata] = useState<string>('')
+  const [selectedLanguage, setSelectedLanguage] = useState<'roman' | 'hangul'>(
+    'roman'
+  )
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -309,6 +313,7 @@ export default function ManageFontsPage() {
     return z.object({
       ...schemaFields,
       styles: z.array(z.string()).optional(),
+      language: z.enum(['roman', 'hangul']),
     })
   }, [schema, selectedTable])
 
@@ -321,16 +326,19 @@ export default function ManageFontsPage() {
       storage_url: '',
       commentary: '',
       styles: [],
+      language: 'roman',
     },
   })
 
   const filteredCategories = useMemo(() => {
-    return categories
-  }, [categories])
+    return categories.filter(
+      (category) => category.language === selectedLanguage
+    )
+  }, [categories, selectedLanguage])
 
   const filteredStyles = useMemo(() => {
-    return styles
-  }, [styles])
+    return styles.filter((style) => style.language === selectedLanguage)
+  }, [styles, selectedLanguage])
 
   const groupedCategories = useMemo(() => {
     return filteredCategories.reduce(
@@ -394,15 +402,16 @@ export default function ManageFontsPage() {
         form.setValue('license_id', matchingLicense.id.toString())
       }
 
-      // Set the commentary to include additional metadata
-      const commentary = `
-      Font Subfamily: ${analysisResult.fontSubfamily}
-      Full Name: ${analysisResult.fullName}
-      Version: ${analysisResult.version}
-      Copyright: ${analysisResult.copyright}
-      License: ${analysisResult.license}
-    `.trim()
-      form.setValue('commentary', commentary)
+      // Set the additional metadata
+      setAdditionalMetadata(
+        `
+        Font Subfamily: ${analysisResult.fontSubfamily}
+        Full Name: ${analysisResult.fullName}
+        Version: ${analysisResult.version}
+        Copyright: ${analysisResult.copyright}
+        License: ${analysisResult.license}
+      `.trim()
+      )
     },
     [form, licenses]
   )
@@ -423,6 +432,33 @@ export default function ManageFontsPage() {
               <FormControl>
                 <Input {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="language"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Language</FormLabel>
+              <Select
+                onValueChange={(value: 'roman' | 'hangul') => {
+                  field.onChange(value)
+                  setSelectedLanguage(value)
+                }}
+                value={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a language" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="roman">Roman</SelectItem>
+                  <SelectItem value="hangul">Hangul</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
@@ -465,7 +501,7 @@ export default function ManageFontsPage() {
             </FormItem>
           )}
         />
-        <FormField
+        <Form
           control={form.control}
           name="license_id"
           render={({ field }) => (
@@ -537,6 +573,12 @@ export default function ManageFontsPage() {
             </FormItem>
           )}
         />
+        {additionalMetadata && (
+          <div className="mt-4 rounded-md bg-gray-100 p-4">
+            <h3 className="mb-2 text-lg font-semibold">Additional Metadata</h3>
+            <pre className="whitespace-pre-wrap">{additionalMetadata}</pre>
+          </div>
+        )}
       </>
     )
   }
@@ -608,6 +650,7 @@ export default function ManageFontsPage() {
         setRowSelection({})
         setSelectedStyles([])
         setAnalyzedFile(null)
+        setAdditionalMetadata('')
       } catch (error) {
         toast({
           title: 'Error',
@@ -810,6 +853,7 @@ export default function ManageFontsPage() {
                         setRowSelection({})
                         setSelectedStyles([])
                         setAnalyzedFile(null)
+                        setAdditionalMetadata('')
                       }}
                     >
                       Cancel

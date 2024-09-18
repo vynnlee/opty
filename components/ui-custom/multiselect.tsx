@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu'
 import { RotateCcw, ChevronsUpDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -57,12 +58,13 @@ function useMultiSelect(
 // Utility function to display selected items text
 function getSelectedItemsText(
   selectedItems: string[],
-  options: { id: string; label: string }[],
+  options: { label: string; options: { id: string; label: string }[] }[],
   placeholder: string
 ) {
   if (selectedItems.length === 0) return placeholder
+  const allOptions = options.flatMap((group) => group.options)
   const displayedItems = selectedItems.map(
-    (id) => options.find((option) => option.id === id)?.label
+    (id) => allOptions.find((option) => option.id === id)?.label
   )
   return selectedItems.length > 2
     ? `${displayedItems.slice(0, 2).join(', ')} +${selectedItems.length - 2} more`
@@ -70,7 +72,7 @@ function getSelectedItemsText(
 }
 
 interface MultiSelectProps {
-  options: { id: string; label: string }[]
+  options: { label: string; options: { id: string; label: string }[] }[]
   selectedOptions: string[]
   onChange: (selected: string[]) => void
   placeholder?: string
@@ -102,24 +104,43 @@ export default function MultiSelect({
   const renderOptions = useCallback(
     () => (
       <div className="max-h-60 overflow-y-auto">
-        {options.map((option) => (
-          <React.Fragment key={option.id}>
+        {options.map((group) => (
+          <React.Fragment key={group.label}>
             {isMobile ? (
-              <DrawerCheckboxItem
-                checked={selected.includes(option.id)}
-                onCheckedChange={(checked) => toggleItem(option.id, checked)}
-                className="py-4"
-              >
-                {option.label}
-              </DrawerCheckboxItem>
+              <>
+                <DrawerTitle className="px-4 py-2 text-sm font-semibold">
+                  {group.label}
+                </DrawerTitle>
+                {group.options.map((option) => (
+                  <DrawerCheckboxItem
+                    key={option.id}
+                    checked={selected.includes(option.id)}
+                    onCheckedChange={(checked) =>
+                      toggleItem(option.id, checked)
+                    }
+                    className="py-4"
+                  >
+                    {option.label}
+                  </DrawerCheckboxItem>
+                ))}
+              </>
             ) : (
-              <DropdownMenuCheckboxItem
-                checked={selected.includes(option.id)}
-                onCheckedChange={(checked) => toggleItem(option.id, checked)}
-              >
-                {option.label}
-              </DropdownMenuCheckboxItem>
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>{group.label}</DropdownMenuLabel>
+                {group.options.map((option) => (
+                  <DropdownMenuCheckboxItem
+                    key={option.id}
+                    checked={selected.includes(option.id)}
+                    onCheckedChange={(checked) =>
+                      toggleItem(option.id, checked)
+                    }
+                  >
+                    {option.label}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuGroup>
             )}
+            {!isMobile && <DropdownMenuSeparator />}
           </React.Fragment>
         ))}
       </div>

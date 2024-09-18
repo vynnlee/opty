@@ -9,17 +9,20 @@ interface FontSearchFormProps
   extends React.FormHTMLAttributes<HTMLFormElement> {
   placeholder?: string
   className?: string
+  onSearch: (query: string) => void
 }
 
 const FontSearchForm = ({
   placeholder = 'Search font titles',
   className,
+  onSearch,
   ...props
 }: FontSearchFormProps) => {
-  // 추후 검색 로직을 추가할 수 있도록 함수 정의
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // 검색 로직은 추후 추가 예정
+    const formData = new FormData(e.currentTarget)
+    const query = formData.get('query') as string
+    onSearch(query)
   }
 
   return (
@@ -29,6 +32,7 @@ const FontSearchForm = ({
       {...props}
     >
       <Input
+        name="query"
         placeholder={placeholder}
         className="border-none bg-neutral-100 pr-10"
       />

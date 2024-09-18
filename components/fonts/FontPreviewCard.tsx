@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
+import { z } from 'zod'
 import { LucideIcon } from '@/lib/lucide-icon'
-import { CloudDownload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import {
@@ -14,31 +14,48 @@ import {
 } from '@/components/ui/tooltip'
 
 interface Author {
+  id: number
   name: string
   link: string
 }
 
 interface FontCardProps {
   name?: string
-  authors?: Author[]
+  authors?: { authors: Author }[]
   fontUrl?: string
   downloadUrl?: string
   comment?: string
+  previewText: string
+  fontSize: number
 }
+
+const MAX_CHARS = 50
+
+const previewTextSchema = z
+  .string()
+  .max(MAX_CHARS, `미리보기 텍스트는 최대 ${MAX_CHARS}자까지 입력 가능합니다.`)
 
 export default function FontPreviewCard({
   name = 'Sample Font',
-  authors = [{ name: 'Unknown Author', link: '#' }],
+  authors = [{ authors: { id: 0, name: 'Unknown Author', link: '#' } }],
   fontUrl = '',
   downloadUrl = '#',
   comment = 'No comments available.',
+  previewText,
+  fontSize,
 }: FontCardProps) {
-  // 폰트 이름을 편집할 수 있는 상태
-  const [editableName, setEditableName] = useState(name)
-  // 폰트 로딩 여부 상태
   const [fontLoaded, setFontLoaded] = useState(false)
+  const [localPreviewText, setLocalPreviewText] = useState(
+    previewText.slice(0, MAX_CHARS)
+  )
+  const [charCount, setCharCount] = useState(previewText.length)
+  const [error, setError] = useState<string | null>(null)
 
-  // 폰트 로딩 및 상태 관리
+  useEffect(() => {
+    setLocalPreviewText(previewText.slice(0, MAX_CHARS))
+    setCharCount(previewText.length)
+  }, [previewText])
+
   useEffect(() => {
     if (fontUrl) {
       const fontFace = new FontFace(name, `url("${fontUrl}")`)
@@ -54,10 +71,9 @@ export default function FontPreviewCard({
     }
   }, [name, fontUrl])
 
-  // 저자 정보를 JSX로 변환하는 함수
   const renderAuthors = () =>
-    authors.map((author, index) => (
-      <span key={index}>
+    authors.map(({ authors: author }, index) => (
+      <span key={author.id}>
         <a
           className="hover:underline"
           href={author.link}
@@ -70,6 +86,22 @@ export default function FontPreviewCard({
       </span>
     ))
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newText = e.target.value
+    try {
+      previewTextSchema.parse(newText)
+      setLocalPreviewText(newText)
+      setCharCount(newText.length)
+      setError(null)
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        setError(err.errors[0].message)
+      }
+    }
+  }
+
+  const displayText = localPreviewText.trim() || name
+
   return (
     <Card className="w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 shadow-none">
       <CardHeader className="px-6 py-4">
@@ -78,16 +110,20 @@ export default function FontPreviewCard({
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-y-3">
-        <input
-          type="text"
-          className="w-full border-none bg-transparent text-6xl text-neutral-900 outline-none"
-          style={{
-            fontFamily: fontLoaded ? name : 'inherit',
-            opacity: fontLoaded ? 0.5 : 1,
-          }}
-          value={editableName}
-          onChange={(e) => setEditableName(e.target.value)}
-        />
+        <div className="relative">
+          <input
+            type="text"
+            className="w-full border-none bg-transparent outline-none"
+            style={{
+              fontFamily: fontLoaded ? name : 'inherit',
+              opacity: fontLoaded ? 1 : 0.5,
+              fontSize: `${fontSize}px`,
+            }}
+            value={displayText}
+            onChange={handleInputChange}
+          />
+        </div>
+        {error && <p className="text-xs text-red-500">{error}</p>}
         <p className="text-sm text-neutral-600">
           Designed by {renderAuthors()}
         </p>

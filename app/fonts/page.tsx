@@ -1,8 +1,9 @@
-// Fonts.jsx
-
 'use client'
 
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import supabase from '@/lib/supabaseClient'
 
 import { LucideIcon } from '@/lib/lucide-icon'
@@ -11,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import LangSelect from '@/components/fonts/LangSelect'
 import CategorySelect from '@/components/fonts/CategorySelect'
+import StyleSelect from '@/components/fonts/StyleSelect'
 import FontSizeSlider from '@/components/fonts/FontSizeSlider'
 import RegisterAdvCard from '@/components/cta/RegisterAdvCard'
 import FontPreviewCard from '@/components/fonts/FontPreviewCard'
@@ -18,29 +20,120 @@ import { FontSearchForm } from '@/components/fonts/FontSearchForm'
 
 import { Header } from '@/components/header'
 
+const MAX_CHARS = 50
+
+const previewTextSchema = z.object({
+  previewText: z
+    .string()
+    .max(
+      MAX_CHARS,
+      `미리보기 텍스트는 최대 ${MAX_CHARS}자까지 입력 가능합니다.`
+    ),
+})
+
+const PREVIEW_TEXTS = [
+  'Free, but Better.',
+  'Pack my box with five dozen liquor jugs.',
+  'How vexingly quick daft zebras jump!',
+]
+
+type PreviewTextForm = z.infer<typeof previewTextSchema>
+
+interface Font {
+  id: number
+  name: string
+  commentary: string
+  storage_url: string
+  language: string
+  authors: { authors: { id: number; name: string; link: string } }[]
+  styles: { styles: { id: number; style: string } }[]
+  categories: { id: number; category: string; subcategory: string | null }[]
+}
+
 export default function Fonts() {
-  const [fonts, setFonts] = useState([])
+  const [fonts, setFonts] = useState<Font[]>([])
+  const [fontSize, setFontSize] = useState(56)
+  const [selectedLanguage, setSelectedLanguage] = useState<'hangul' | 'roman'>(
+    'hangul'
+  )
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [selectedStyles, setSelectedStyles] = useState<string[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [charCount, setCharCount] = useState(0)
+
+  const {
+    register,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<PreviewTextForm>({
+    resolver: zodResolver(previewTextSchema),
+    defaultValues: {
+      previewText: '',
+    },
+  })
+
+  const previewText = watch('previewText')
+
+  useEffect(() => {
+    setCharCount(previewText.length)
+  }, [previewText])
 
   useEffect(() => {
     const fetchFonts = async () => {
       const { data, error } = await supabase.from('fonts').select(`
-          id,
-          name,
-          commentary,
-          storage_url,
-          authors:font_authors(author_id (name, link)),
-          styles:font_styles(style_id (style))
-        `)
+        id,
+        name,
+        commentary,
+        storage_url,
+        language,
+        authors:font_authors(authors(id, name, link)),
+        styles:font_styles(styles(id, style)),
+        categories(id, category, subcategory)
+      `)
 
       if (error) {
         console.error('Error fetching fonts:', error)
       } else {
-        setFonts(data)
+        setFonts(data || [])
       }
     }
 
     fetchFonts()
   }, [])
+
+  const handleRandomText = useCallback(() => {
+    let newText
+    do {
+      newText = PREVIEW_TEXTS[Math.floor(Math.random() * PREVIEW_TEXTS.length)]
+    } while (newText === previewText && PREVIEW_TEXTS.length > 1)
+    setValue('previewText', newText)
+  }, [previewText, setValue])
+
+  const handlePreviewTextChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    const newText = e.target.value.slice(0, MAX_CHARS)
+    setValue('previewText', newText)
+    setCharCount(newText.length)
+  }
+
+  const filteredFonts = fonts.filter((font) => {
+    const languageMatch =
+      !selectedLanguage || font.language === selectedLanguage
+    const categoryMatch =
+      selectedCategories.length === 0 ||
+      font.categories.some((cat) =>
+        selectedCategories.includes(cat.category_id.category)
+      )
+    const styleMatch =
+      selectedStyles.length === 0 ||
+      font.styles.some((style) => selectedStyles.includes(style.style_id.style))
+    const searchMatch =
+      searchQuery === '' ||
+      font.name.toLowerCase().includes(searchQuery.toLowerCase())
+    return languageMatch && categoryMatch && styleMatch && searchMatch
+  })
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -65,16 +158,29 @@ export default function Fonts() {
                     variant="outline"
                     size="chip"
                     className="gap-1 font-geistMono text-[12px] font-semibold text-neutral-600 hover:bg-neutral-50 hover:text-neutral-500"
+                    onClick={handleRandomText}
                   >
                     <LucideIcon name="Shuffle" className="size-4" />
                     Random
                   </Button>
                 </div>
 
-                <Textarea
-                  placeholder="아무 말이나 적어보세요."
-                  className="resize-none border-none bg-neutral-100"
-                />
+                <div className="relative">
+                  <Textarea
+                    {...register('previewText')}
+                    onChange={handlePreviewTextChange}
+                    placeholder="아무 말이나 적어보세요."
+                    className="resize-none border-none bg-neutral-100"
+                  />
+                  <span className="absolute bottom-2 right-2 text-xs text-gray-400">
+                    {charCount}/{MAX_CHARS}
+                  </span>
+                </div>
+                {errors.previewText && (
+                  <p className="text-xs text-red-500">
+                    {errors.previewText.message}
+                  </p>
+                )}
               </div>
               {/* Preview size */}
               <div id="preview-size" className="flex flex-col gap-2">
@@ -84,7 +190,7 @@ export default function Fonts() {
                 >
                   글꼴 크기
                 </Label>
-                <FontSizeSlider />
+                <FontSizeSlider value={fontSize} onValueChange={setFontSize} />
               </div>
             </div>
             {/* Filter section */}
@@ -92,7 +198,7 @@ export default function Fonts() {
               id="filter-section"
               className="flex flex-col gap-6 overflow-hidden p-4 scrollbar-hide"
             >
-              <FontSearchForm className="" />
+              <FontSearchForm className="" onSearch={setSearchQuery} />
               {/* Language filter */}
               <div id="filter-language" className="flex flex-col gap-2">
                 <Label
@@ -102,7 +208,10 @@ export default function Fonts() {
                   <LucideIcon name="Languages" className="size-4" />
                   언어
                 </Label>
-                <LangSelect />
+                <LangSelect
+                  value={selectedLanguage}
+                  onChange={setSelectedLanguage}
+                />
               </div>
               {/* Category filter */}
               <div id="filter-category" className="flex flex-col gap-2">
@@ -113,18 +222,26 @@ export default function Fonts() {
                   <LucideIcon name="Tag" className="size-4" />
                   카테고리
                 </Label>
-                <CategorySelect />
+                <CategorySelect
+                  selectedLanguage={selectedLanguage}
+                  value={selectedCategories}
+                  onChange={setSelectedCategories}
+                />
               </div>
-              {/* Personality filter */}
-              <div id="filter-personality" className="flex flex-col gap-2">
+              {/* Style filter */}
+              <div id="filter-style" className="flex flex-col gap-2">
                 <Label
-                  htmlFor="filter-personality"
+                  htmlFor="filter-style"
                   className="flex flex-row items-center gap-1 text-sm text-neutral-600"
                 >
                   <LucideIcon name="Blend" className="size-4" />
-                  느낌
+                  스타일
                 </Label>
-                <CategorySelect />
+                <StyleSelect
+                  selectedLanguage={selectedLanguage}
+                  value={selectedStyles}
+                  onChange={setSelectedStyles}
+                />
               </div>
             </div>
           </div>
@@ -134,14 +251,16 @@ export default function Fonts() {
           id="explore"
           className="flex flex-col gap-4 overflow-y-auto bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] px-4 pt-4 scrollbar-hide [background-size:16px_16px]"
         >
-          {fonts.map((font) => (
+          {filteredFonts.map((font) => (
             <FontPreviewCard
               key={font.id}
               name={font.name}
-              authors={font.authors.map((author) => author.author_id)}
+              authors={font.authors}
               fontUrl={font.storage_url}
               comment={font.commentary}
               downloadUrl={font.storage_url}
+              previewText={previewText}
+              fontSize={fontSize}
             />
           ))}
         </section>

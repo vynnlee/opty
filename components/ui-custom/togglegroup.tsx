@@ -36,7 +36,7 @@ export default function ToggleGroup({
               'relative z-10 flex-1 rounded-full px-2 py-2 text-center text-sm font-medium leading-tight transition-all',
               value === option
                 ? 'text-black'
-                : 'text-neutral-500 hover:bg-neutral-200'
+                : 'text-neutral-500 hover:bg-black/5'
             )}
           >
             {option}

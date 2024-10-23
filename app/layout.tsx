@@ -70,9 +70,11 @@ export default function RootLayout({ children }) {
         <AppProvider>
           <I18nProvider value={{ language }}>
             <ThemeProvider value={{ theme }}>
-              <div id="__next" className="flex flex-grow flex-col">
-                {/* <Header /> */}
-                <main className="flex-grow">{children}</main>
+              <div id="__next" className="flex flex-grow flex-col bg-black">
+                <Header />
+                <main className="flex flex-grow flex-col overflow-hidden rounded-t-2xl md:rounded-none">
+                  {children}
+                </main>
               </div>
               <Toaster richColors closeButton />
               <TailwindIndicator />

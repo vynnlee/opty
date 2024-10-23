@@ -104,9 +104,11 @@ export default function FontPreviewCard({
 
   return (
     <Card className="w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 shadow-none">
-      <CardHeader className="px-6 py-4">
+      <CardHeader className="px-6 pb-2 pt-5">
         <div className="flex w-full flex-row justify-between">
-          <p className="text-base font-medium text-neutral-500">{name}</p>
+          <p className="font-geistMono text-base font-medium text-neutral-500">
+            {name}
+          </p>
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-y-3">

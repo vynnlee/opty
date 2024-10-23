@@ -50,9 +50,9 @@ export function Navigation() {
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <Link href="/fonts" legacyBehavior passHref>
+          <Link href="/ai" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              글꼴 둘러보기
+              AI 검색
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
@@ -108,7 +108,7 @@ export function Navigation() {
         <NavigationMenuItem>
           <NavigationMenuTrigger>알려드림</NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+            <ul className="grid w-[400px] gap-3 p-4 md:w-[320px] md:grid-cols-1 lg:w-[320px]">
               {docs.map((docs) => (
                 <ListItem
                   key={docs.title}

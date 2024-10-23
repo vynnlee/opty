@@ -123,12 +123,19 @@ export default function Fonts() {
       !selectedLanguage || font.language === selectedLanguage
     const categoryMatch =
       selectedCategories.length === 0 ||
-      font.categories.some((cat) =>
-        selectedCategories.includes(cat.category_id.category)
-      )
+      (Array.isArray(font.categories) &&
+        font.categories.some((cat) =>
+          selectedCategories.includes(cat.category)
+        ))
+
     const styleMatch =
       selectedStyles.length === 0 ||
-      font.styles.some((style) => selectedStyles.includes(style.style_id.style))
+      font.styles.some(
+        (style) =>
+          style.style_id &&
+          style.style_id.style &&
+          selectedStyles.includes(style.style_id.style)
+      )
     const searchMatch =
       searchQuery === '' ||
       font.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -136,11 +143,13 @@ export default function Fonts() {
   })
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <div className="grid flex-1 grid-cols-[280px_1fr_280px] overflow-hidden">
-        <section id="sidebar" className="flex flex-col border-r">
-          <div className="fixed grid h-full grid-rows-[auto_1fr] overflow-hidden">
+    <div className="flex flex-col">
+      <div className="flex flex-row overflow-hidden">
+        <section
+          id="sidebar"
+          className="flex w-full min-w-[120px] max-w-[240px] flex-col border-r"
+        >
+          <div className="fixed grid h-full w-full min-w-[120px] max-w-[240px] grid-rows-[auto_1fr] overflow-hidden">
             <div
               id="setting-section"
               className="flex flex-col gap-6 overflow-hidden border-b p-4 pb-8 scrollbar-hide"
@@ -249,8 +258,44 @@ export default function Fonts() {
         {/* Explore Section */}
         <section
           id="explore"
-          className="flex flex-col gap-4 overflow-y-auto bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] px-4 pt-4 scrollbar-hide [background-size:16px_16px]"
+          className="flex h-[2000px] grow flex-col gap-4 overflow-y-auto bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] px-4 pt-4 scrollbar-hide [background-size:16px_16px]"
         >
+          {filteredFonts.map((font) => (
+            <FontPreviewCard
+              key={font.id}
+              name={font.name}
+              authors={font.authors}
+              fontUrl={font.storage_url}
+              comment={font.commentary}
+              downloadUrl={font.storage_url}
+              previewText={previewText}
+              fontSize={fontSize}
+            />
+          ))}
+          {filteredFonts.map((font) => (
+            <FontPreviewCard
+              key={font.id}
+              name={font.name}
+              authors={font.authors}
+              fontUrl={font.storage_url}
+              comment={font.commentary}
+              downloadUrl={font.storage_url}
+              previewText={previewText}
+              fontSize={fontSize}
+            />
+          ))}
+          {filteredFonts.map((font) => (
+            <FontPreviewCard
+              key={font.id}
+              name={font.name}
+              authors={font.authors}
+              fontUrl={font.storage_url}
+              comment={font.commentary}
+              downloadUrl={font.storage_url}
+              previewText={previewText}
+              fontSize={fontSize}
+            />
+          ))}
           {filteredFonts.map((font) => (
             <FontPreviewCard
               key={font.id}
@@ -265,8 +310,11 @@ export default function Fonts() {
           ))}
         </section>
         {/* AI Search Section */}
-        <section id="ai-search" className="flex flex-col border-l">
-          <div className="fixed grid h-full grid-rows-[1fr_340px] overflow-hidden">
+        <section
+          id="ai-search"
+          className="flex w-full min-w-[120px] max-w-[240px] flex-col border-l"
+        >
+          <div className="fixed grid h-full w-full min-w-[120px] max-w-[240px] grid-rows-[1fr_380px] overflow-hidden">
             <div
               id="ai-section"
               className="flex flex-col gap-6 overflow-y-auto px-4 pt-4 scrollbar-hide"
